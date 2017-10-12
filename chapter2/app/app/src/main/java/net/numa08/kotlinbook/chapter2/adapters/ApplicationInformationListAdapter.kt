@@ -1,5 +1,6 @@
 package net.numa08.kotlinbook.chapter2.adapters
 
+import android.content.Context
 import android.databinding.DataBindingUtil
 import android.databinding.ObservableArrayList
 import android.databinding.ObservableList
@@ -52,12 +53,14 @@ class ApplicationInformationListAdapter : RecyclerView.Adapter<ApplicationInform
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = DataBindingUtil.inflate<ViewApplicationInformationListRowBinding>(LayoutInflater.from(parent.context), R.layout.view_application_information_list_row, parent, false)
-        binding.viewModel = ApplicationInformationListRowViewModel(ApplicationInformationListRowViewModel.Injector { parent.context })
+        binding.viewModel = ApplicationInformationListRowViewModel(object : ApplicationInformationListRowViewModel.Injector {
+            override fun context(): Context = parent.context
+        })
         return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.binding.viewModel.setApplicationInformation(informationList[position].first)
+        holder.binding.viewModel.applicationInformation = informationList[position].first
         holder.binding.viewModel.setProcessInformation(informationList[position].second)
         holder.binding.viewModel.setOnClickListener {
             onItemClickListener?.invoke(holder.adapterPosition, holder.binding)
