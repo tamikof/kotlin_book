@@ -11,8 +11,13 @@ public final class Chapter2Application extends Application {
 
     private ApplicationInformationRepository applicationInformationRepository;
     private ProcessInformationRepository processInformationRepository;
+
     public ApplicationInformationRepository getApplicationInformationRepository() {
         return applicationInformationRepository;
+    }
+
+    public ProcessInformationRepository getProcessInformationRepository() {
+        return processInformationRepository;
     }
 
     @Override
