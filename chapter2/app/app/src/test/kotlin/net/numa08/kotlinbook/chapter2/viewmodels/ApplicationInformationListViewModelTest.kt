@@ -17,6 +17,7 @@ import org.mockito.Mockito.*
 /**
  * Created by fujinotamiko on 2017/10/28.
  */
+@RunWith(RobolectricTestRunner::class)
 class ApplicationInformationListViewModelTest {
     @Test
     fun isVisibleプロパティが遷移すること() {
@@ -28,26 +29,23 @@ class ApplicationInformationListViewModelTest {
         assertThat("画面が終了した後は非表示状態となる", viewModel.isVisible, `is`(false)) // (4)
     }
 
-    @RunWith(RobolectricTestRunner::class) // (1)
-    class ApplicationInformationListViewModelTest {
 
-        @Test
-        fun isLoadingプロパティが遷移すること() {
-            val viewModel = ApplicationInformationListViewModel(object : ApplicationInformationRepository { //(2)
-                override fun findAllApplications(callback: ApplicationInformationRepository.FindAllApplicationsCallback?) { // (3)
-                    callback?.onFindAllApplications(emptyList())
-                }
+    @Test
+    fun isLoadingプロパティが遷移すること() {
+        val viewModel = ApplicationInformationListViewModel(object : ApplicationInformationRepository { //(2)
+            override fun findAllApplications(callback: ApplicationInformationRepository.FindAllApplicationsCallback?) { // (3)
+                callback?.onFindAllApplications(emptyList())
+            }
 
-                override fun findApplicationByPackageName(packageName: String?, callback: ApplicationInformationRepository.FindApplicationCallback?) {
-                    fail("ここは呼ばれない") // (4)
-                }
-            })
-            assertThat("初期状態ではロード中ではない", viewModel.isLoading, `is`(false)) // (5)
-            viewModel.onCreate()
-            assertThat("onCreateをするとロード状態となる", viewModel.isLoading, `is`(true)) // (6)
-            viewModel.fetchApplication()
-            assertThat("ロードが完了するとロード状態ではなくなる", viewModel.isLoading, `is`(false)) // (7)
-        }
+            override fun findApplicationByPackageName(packageName: String?, callback: ApplicationInformationRepository.FindApplicationCallback?) {
+                fail("ここは呼ばれない") // (4)
+            }
+        })
+        assertThat("初期状態ではロード中ではない", viewModel.isLoading, `is`(false)) // (5)
+        viewModel.onCreate()
+        assertThat("onCreateをするとロード状態となる", viewModel.isLoading, `is`(true)) // (6)
+        viewModel.fetchApplication()
+        assertThat("ロードが完了するとロード状態ではなくなる", viewModel.isLoading, `is`(false)) // (7)
     }
 
     @Test

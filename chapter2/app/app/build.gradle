@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 
 def supportLibraryVersion = "25.3.1"
 
@@ -33,6 +34,7 @@ android {
     }
 
     sourceSets { // (4)
+        main.java.srcDirs += 'src/main/kotlin'  // (3)
         test.java.srcDirs += 'src/test/kotlin' // (5)
     }
 }
@@ -52,10 +54,15 @@ dependencies {
     compile "com.android.support:support-annotations:$supportLibraryVersion"
     compile "com.android.support:design:$supportLibraryVersion"
     testCompile 'junit:junit:4.12'
-    //compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version" // (4)
+    kapt 'com.android.databinding:compiler:2.3.3' // (2)
     testCompile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version" // (6)
     testCompile "org.robolectric:robolectric:3.4.2" // (7)
     testCompile "org.mockito:mockito-core:2.10.0" // (1)
+    testCompile ("com.nhaarman:mockito-kotlin-kt1.1:1.5.0", { // (5)
+        exclude group: 'org.mockit', module: 'mockito-core'
+        exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib'
+    })
 }
 repositories {
     mavenCentral()
