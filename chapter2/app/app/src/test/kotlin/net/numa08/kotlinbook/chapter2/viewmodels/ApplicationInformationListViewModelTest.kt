@@ -6,6 +6,8 @@ import android.content.pm.ApplicationInfo
 import android.graphics.drawable.ColorDrawable
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
+import kotlinx.coroutines.experimental.Deferred
+import kotlinx.coroutines.experimental.async
 import net.numa08.kotlinbook.chapter2.models.ApplicationInformation
 import net.numa08.kotlinbook.chapter2.models.ProcessInformation
 import net.numa08.kotlinbook.chapter2.repositories.ApplicationInformationRepository
@@ -23,10 +25,9 @@ class ApplicationInformationListViewModelTest {
     @Test
     fun データが正しく読み込まれること() {
         val mockApplicationInformationRepository = mock<ApplicationInformationRepository> {
-            on { findAllApplications(any()) }.then {
-                val cb = it.getArgument<ApplicationInformationRepository.FindAllApplicationsCallback>(0)
-                cb.onFindAllApplications(
-                        listOf(
+            on { findAllApplicationsAsync() }. // (1)
+                    thenReturn(async { // (3)
+                        return@async listOf(
                                 ApplicationInformation(
                                         "label 1",
                                         ColorDrawable(0),
@@ -62,16 +63,14 @@ class ApplicationInformationListViewModelTest {
                                 )
 
                         )
-                )
-            }
+                    })
         }
 
         val mockProcessInformationRepository = mock<ProcessInformationRepository> {
-            on { findProcessInformationByName(any(), any()) }.then {
-                val name = it.getArgument<String>(0)
-                val cb = it.getArgument<(ProcessInformation) -> Unit>(1)
-                cb(ProcessInformation.InActiveProcessInformation(name))
-            }
+            on { findProcessInformationByNameAsync(any()) }. // (2)
+                    thenReturn(async {  // (4)
+                        return@async ProcessInformation.InActiveProcessInformation("test")
+                    })
         }
         val viewModel = ApplicationInformationListViewModel(mockApplicationInformationRepository, mockProcessInformationRepository)
         viewModel.onCreate()
@@ -83,17 +82,30 @@ class ApplicationInformationListViewModelTest {
     @Test
     fun データが空でもisLoadingプロパティが遷移すること() {
         val viewModel = ApplicationInformationListViewModel(object : ApplicationInformationRepository {
-            override fun findAllApplications(callback: ApplicationInformationRepository.FindAllApplicationsCallback?) {
-                callback?.onFindAllApplications(emptyList())
-            }
-
-            override fun findApplicationByPackageName(packageName: String?, callback: ApplicationInformationRepository.FindApplicationCallback?) {
+            override fun findAllApplications(cb: (List<ApplicationInformation>) -> Unit) {
                 fail("ここは呼ばれない")
             }
+
+            override fun findApplicationByPackageName(packageName: String, cb: (ApplicationInformation?) -> Unit) {
+                fail("ここは呼ばれない")
+            }
+
+            override fun findAllApplicationsAsync(): Deferred<List<ApplicationInformation>> = async { // (1)
+                return@async emptyList<ApplicationInformation>() // (5)
+            }
+
+            override fun findApplicationByPackageNameAsync(packageName: String): Deferred<ApplicationInformation?> = async { // (2)
+                fail("ここは呼ばれない") // (4)
+                return@async null
+            }
+
         }, object : ProcessInformationRepository {
             override fun findProcessInformationByName(name: String, cb: (ProcessInformation) -> Unit) {
-                val info = ProcessInformation.InActiveProcessInformation(name)
-                cb(info)
+                fail("ここは呼ばれない")
+            }
+
+            override fun findProcessInformationByNameAsync(name: String): Deferred<ProcessInformation> = async { // (3)
+                return@async ProcessInformation.InActiveProcessInformation(name) // (6)
             }
         })
         assertThat("初期状態ではロード中ではない", viewModel.isLoading, `is`(false))

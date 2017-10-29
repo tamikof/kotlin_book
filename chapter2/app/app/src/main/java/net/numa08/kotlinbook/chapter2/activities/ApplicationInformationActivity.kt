@@ -52,25 +52,31 @@ class ApplicationInformationActivity : AppCompatActivity(), ApplicationInformati
                 val actionBar = requireNotNull(supportActionBar, { "setSupportActionBar が呼ばれていません。setSupportActionBar を呼び出してください" })
                 actionBar.title = applicationInformation.label
 
-                if (applicationInformation.vibrantRGB != 0) {
-                    actionBar.setBackgroundDrawable(ColorDrawable(applicationInformation.vibrantRGB))
+                applicationInformation.vibrantRGB?.let { vibrantRGB -> // (1)
+                    actionbar.setBackgroundDrawable(ColorDrawable(vibrantRGB))
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+                        window.statusBarColor = ColorUtil.darken(vibrantRGB, 12)
+                    }
                 }
-                if (applicationInformation.bodyTextColor != 0) {
+                applicationInformation.bodyTextColor?.let { bodyTextColor ->  // (2)
                     val spannableString = SpannableString(actionBar.title)
                     spannableString.setSpan(
-                            ForegroundColorSpan(applicationInformation.bodyTextColor),
+                            ForegroundColorSpan(bodyTextColor),
                             0,
                             spannableString.length,
                             Spannable.SPAN_INCLUSIVE_INCLUSIVE
                     )
                     actionBar.title = spannableString
-
                 }
+
+                /*
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && applicationInformation.vibrantRGB != 0) {
                     val window = window
                     window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
                     window.statusBarColor = ColorUtil.darken(applicationInformation.vibrantRGB, 12)
                 }
+                */
             }
         })
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {

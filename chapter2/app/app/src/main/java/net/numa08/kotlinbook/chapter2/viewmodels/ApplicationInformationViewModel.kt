@@ -5,13 +5,14 @@ import android.databinding.BaseObservable
 import android.databinding.Bindable
 import android.graphics.drawable.Drawable
 import android.widget.ArrayAdapter
-import android.widget.BaseAdapter
 
 import net.numa08.kotlinbook.chapter2.BR
 import net.numa08.kotlinbook.chapter2.models.ApplicationInformation
 import net.numa08.kotlinbook.chapter2.repositories.ApplicationInformationRepository
 
-import java.util.ArrayList
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.android.UI
+import kotlinx.coroutines.experimental.launch
 
 class ApplicationInformationViewModel(injector: Injector, private val applicationInformationRepository: ApplicationInformationRepository) : BaseObservable() {
 
@@ -54,15 +55,20 @@ class ApplicationInformationViewModel(injector: Injector, private val applicatio
         isVisible = true
     }
 
-    fun onDestroy() {
-        isVisible = false
-    }
+    var job: Job? = null
+        private set
 
     fun fetchApplication(packageName: String) {
-        applicationInformationRepository.findApplicationByPackageName(packageName) { information ->
-            if (isVisible && information != null) {
-                applicationInformation = information
+        job = launch(UI) { // (1)
+            val info = applicationInformationRepository.findApplicationByPackageNameAsync(packageName).await() // (2)
+            if (info != null) {
+                applicationInformation = info
             }
         }
+    }
+
+    fun onDestroy() {
+        isVisible = false
+        job?.cancel() // (3)
     }
 }

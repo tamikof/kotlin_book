@@ -9,6 +9,8 @@ import android.os.Handler
 import android.os.Looper
 import net.numa08.kotlinbook.chapter2.models.ProcessInformation
 import net.numa08.kotlinbook.chapter2.repositories.ProcessInformationRepository
+import kotlinx.coroutines.experimental.Deferred
+import kotlinx.coroutines.experimental.async
 
 /**
  * Created by fujinotamiko on 2017/10/28.
@@ -31,6 +33,10 @@ class ProcessInformationRepositoryImpl(
         cb(findProcessInformationByName(name))
     }
 
+    override fun findProcessInformationByNameAsync(name: String): Deferred<ProcessInformation> = async {
+        return@async findProcessInformationByName(name)
+    }
+
     private fun findProcessInformationByName(name: String): ProcessInformation {
         activityManager.runningAppProcesses.find { it.processName == name } ?: return ProcessInformation.InActiveProcessInformation(name) // (3)
         return ProcessInformation.ActiveProcessInformation(name)
@@ -49,6 +55,10 @@ class ProcessInformationRepositoryImplV21(
                 cb(info)
             }
         }.start()
+    }
+
+    override fun findProcessInformationByNameAsync(name: String): Deferred<ProcessInformation> = async {
+        return@async findProcessInformationByName(name)
     }
 
     private fun findProcessInformationByName(name: String): ProcessInformation {
