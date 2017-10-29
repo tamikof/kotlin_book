@@ -39,7 +39,7 @@ class ApplicationInformationViewModel(injector: Injector, private val applicatio
             }
         }
 
-    private val adapter: ArrayAdapter<String> = ArrayAdapter(injector.context, android.R.layout.simple_list_item_1, android.R.id.text1)
+    val adapter: ArrayAdapter<String> = ArrayAdapter(injector.context, android.R.layout.simple_list_item_1, android.R.id.text1)
 
     private var isVisible: Boolean = false
 
