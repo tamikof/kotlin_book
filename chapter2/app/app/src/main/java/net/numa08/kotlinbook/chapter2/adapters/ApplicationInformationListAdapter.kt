@@ -49,9 +49,9 @@ class ApplicationInformationListAdapter : RecyclerView.Adapter<ApplicationInform
         this.onItemClickListener = onItemClickListener
     }
 
-    fun getInformationList(): List<Pair<ApplicationInformation, ProcessInformation>> {
-        return informationList
-    }
+    //fun getInformationList(): List<Pair<ApplicationInformation, ProcessInformation>> {
+    //    return informationList
+    //}
 
     class ViewHolder(val binding: ViewApplicationInformationListRowBinding) : RecyclerView.ViewHolder(binding.root)
 
