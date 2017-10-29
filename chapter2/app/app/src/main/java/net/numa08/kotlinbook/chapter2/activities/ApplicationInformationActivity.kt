@@ -7,13 +7,11 @@ import android.databinding.Observable
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
-import android.support.v7.app.ActionBar
 import android.support.v7.app.AppCompatActivity
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.view.MenuItem
-import android.view.Window
 import android.view.WindowManager
 
 import net.numa08.kotlinbook.chapter2.BR
@@ -34,8 +32,9 @@ class ApplicationInformationActivity : AppCompatActivity(), ApplicationInformati
         super.onCreate(savedInstanceState)
         //binding = DataBindingUtil.setContentView(this, R.layout.activity_application_information)
         setSupportActionBar(binding.toolbar)
+        val actionbar = requireNotNull(supportActionBar, { "setSupportActionBar が呼ばれていません。setSupportActionBar を呼び出してください" })
+        actionbar.setDisplayHomeAsUpEnabled(true)
 
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         binding.viewModel = ApplicationInformationViewModel(
                 this,
                 (application as Chapter2Application).applicationInformationRepository
@@ -50,8 +49,8 @@ class ApplicationInformationActivity : AppCompatActivity(), ApplicationInformati
                 }
                 val applicationInformation = binding.viewModel.applicationInformation ?: return
 
-                val actionbar = requireNotNull(supportActionBar, { "setSupportActionBar が呼ばれていません。setSupportActionBar を呼び出してください" })
-                actionbar.setDisplayHomeAsUpEnabled(true)
+                val actionBar = requireNotNull(supportActionBar, { "setSupportActionBar が呼ばれていません。setSupportActionBar を呼び出してください" })
+                actionBar.title = applicationInformation.label
 
                 if (applicationInformation.vibrantRGB != 0) {
                     actionBar.setBackgroundDrawable(ColorDrawable(applicationInformation.vibrantRGB))
@@ -64,7 +63,7 @@ class ApplicationInformationActivity : AppCompatActivity(), ApplicationInformati
                             spannableString.length,
                             Spannable.SPAN_INCLUSIVE_INCLUSIVE
                     )
-                    actionBar.title = applicationInformation.label
+                    actionBar.title = spannableString
 
                 }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && applicationInformation.vibrantRGB != 0) {

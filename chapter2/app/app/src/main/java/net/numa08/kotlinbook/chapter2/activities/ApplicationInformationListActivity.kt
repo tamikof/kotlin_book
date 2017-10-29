@@ -36,7 +36,7 @@ class ApplicationInformationListActivity : AppCompatActivity() {
         binding!!.list.adapter = binding!!.viewModel.adapter
         binding!!.list.addItemDecoration(DividerItemDecoration(this, LinearLayout.VERTICAL))
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            if (isAllowedUsageStatsAccess()) {// (2)
+            if (!isAllowedUsageStatsAccess()) {// (2)
                 AlertDialog.Builder(this) // (1)
                         .setTitle(R.string.dialog_usage_stats_access_title)
                         .setMessage(R.string.dialog_usage_stats_access_message)
