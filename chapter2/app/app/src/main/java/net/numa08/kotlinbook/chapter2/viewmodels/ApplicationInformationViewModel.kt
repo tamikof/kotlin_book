@@ -50,14 +50,6 @@ class ApplicationInformationViewModel(injector: Injector, private val applicatio
         val context: Context
     }
 
-    init {
-        this.adapter = ArrayAdapter(injector.context, android.R.layout.simple_list_item_1, android.R.id.text1)
-    }
-
-    fun getAdapter(): BaseAdapter {
-        return adapter
-    }
-
     fun onCreate() {
         isVisible = true
     }

@@ -28,7 +28,7 @@ class ApplicationInformationActivity : AppCompatActivity(), ApplicationInformati
 
     private val binding: ActivityApplicationInformationBinding by lazy { DataBindingUtil.setContentView<ActivityApplicationInformationBinding>(this, R.layout.activity_application_information) }
 
-    override fun getContext(): Context = this
+    override val context: Context = this
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
