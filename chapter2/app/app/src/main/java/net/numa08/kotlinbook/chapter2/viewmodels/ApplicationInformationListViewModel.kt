@@ -11,13 +11,14 @@ import net.numa08.kotlinbook.chapter2.models.ApplicationInformation
 import net.numa08.kotlinbook.chapter2.models.ProcessInformation
 import net.numa08.kotlinbook.chapter2.repositories.ApplicationInformationRepository
 import net.numa08.kotlinbook.chapter2.repositories.ProcessInformationRepository
-
 import java.util.*
 
 typealias ApplicationInformationListViewModelOnClickListener = (ApplicationInformationListViewModel, Int, ViewApplicationInformationListRowBinding) -> Unit // typealias は class の中では利用できないのでパッケージ内で一意の名前をつける必要がある
-class ApplicationInformationListViewModel(private val applicationInformationRepository: ApplicationInformationRepository, private val processInformationRepository: ProcessInformationRepository) : BaseObservable() {
+class ApplicationInformationListViewModel(
+        private val applicationInformationRepository: ApplicationInformationRepository,
+        private val processInformationRepository: ProcessInformationRepository) : BaseObservable() {
     val adapter = ApplicationInformationListAdapter()
-    private var onClickListener: OnClickListener? = null
+    private var onClickListener: ApplicationInformationListViewModelOnClickListener? = null
 
     @get:Bindable
     var isLoading: Boolean = false
@@ -42,7 +43,8 @@ class ApplicationInformationListViewModel(private val applicationInformationRepo
         fun onClickApplicationInformation(viewModel: ApplicationInformationListViewModel, index: Int, binding: ViewApplicationInformationListRowBinding)
     }
 
-    fun setOnClickListener(onClickListener: (Any, Any, Any) -> Unit) {
+    //fun setOnClickListener(onClickListener: (Any, Any, Any) -> Unit) {
+    fun setOnClickListener(onClickListener: ApplicationInformationListViewModelOnClickListener?) {
         this.onClickListener = onClickListener
     }
 

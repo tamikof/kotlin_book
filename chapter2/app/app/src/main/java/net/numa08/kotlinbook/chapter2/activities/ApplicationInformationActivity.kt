@@ -26,15 +26,13 @@ import net.numa08.kotlinbook.chapter2.viewmodels.ApplicationInformationViewModel
 
 class ApplicationInformationActivity : AppCompatActivity(), ApplicationInformationViewModel.Injector {
 
-    internal var binding: ActivityApplicationInformationBinding
+    private val binding: ActivityApplicationInformationBinding by lazy { DataBindingUtil.setContentView<ActivityApplicationInformationBinding>(this, R.layout.activity_application_information) }
 
-    override fun getContext(): Context {
-        return this
-    }
+    override fun getContext(): Context = this
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_application_information)
+        //binding = DataBindingUtil.setContentView(this, R.layout.activity_application_information)
         setSupportActionBar(binding.toolbar)
 
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
@@ -51,8 +49,10 @@ class ApplicationInformationActivity : AppCompatActivity(), ApplicationInformati
                     return
                 }
                 val applicationInformation = binding.viewModel.applicationInformation ?: return
-                val actionBar = supportActionBar ?: return
-                actionBar.setTitle(applicationInformation.label)
+
+                val actionbar = requireNotNull(supportActionBar, { "setSupportActionBar が呼ばれていません。setSupportActionBar を呼び出してください" })
+                actionbar.setDisplayHomeAsUpEnabled(true)
+
                 if (applicationInformation.vibrantRGB != 0) {
                     actionBar.setBackgroundDrawable(ColorDrawable(applicationInformation.vibrantRGB))
                 }
@@ -61,10 +61,11 @@ class ApplicationInformationActivity : AppCompatActivity(), ApplicationInformati
                     spannableString.setSpan(
                             ForegroundColorSpan(applicationInformation.bodyTextColor),
                             0,
-                            spannableString.length(),
+                            spannableString.length,
                             Spannable.SPAN_INCLUSIVE_INCLUSIVE
                     )
-                    actionBar.setTitle(spannableString)
+                    actionBar.title = applicationInformation.label
+
                 }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && applicationInformation.vibrantRGB != 0) {
                     val window = window
